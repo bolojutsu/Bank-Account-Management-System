@@ -1,0 +1,5 @@
+AccountId, AccountHolder, Balance, AccountNumber
+1,Devin Mateo,checking,400.0,494
+1,Hanzo Cast,checking,350.0,082
+1,Rick Cast,savings,500.0,010
+1,Kathie Smith ,savings,500.0,825
