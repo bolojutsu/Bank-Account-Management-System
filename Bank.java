@@ -17,6 +17,7 @@ public class Bank {
         scanner = new Scanner(System.in);
     }
 
+    // This method is used for creating an account: User chooses between checking.
     public void createAccount() {
         System.out.println("Enter Account Holder name: ");
         String holder = scanner.nextLine();
@@ -41,12 +42,12 @@ public class Bank {
             accounts.add(newAccount);
             System.out.printf("Account created! ID: %d, Number: %s,", newAccount.getAccountId(),
                     newAccount.getAccountNumber());
-
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
+    // Helper method: used to find account by the Unique given Account Number.
     private Account findAccountByNumber(String accountNumber) {
         for (int i = 0; i < accounts.size(); i++) {
             Account account = accounts.get(i);
@@ -57,13 +58,15 @@ public class Bank {
         return null;
     }
 
+    // Method calls the method deposit from Account class. If account does not exist
+    // throw NullPointerException
+    // else deposit amount
     public void deposit() {
         System.out.println("Enter account number: ");
         String accountNumber = scanner.nextLine();
         Account account = findAccountByNumber(accountNumber);
         if (account == null) {
-            System.out.println("Account not found!");
-            return;
+            throw new NullPointerException("Account does not exist");
         }
         System.out.println("Enter deposit amount");
         double amount = scanner.nextDouble();
@@ -76,13 +79,15 @@ public class Bank {
         }
     }
 
+    // Method calls the withdraw method from Account class allowing money to be
+    // withdrawn from the specified Account number throws NullPointerException if
+    // account does not exist
     public void withDraw() {
         System.out.println("Enter account number: ");
         String accountNumber = scanner.nextLine();
         Account account = findAccountByNumber(accountNumber);
         if (account == null) {
-            System.out.println("Account not found");
-            return;
+            throw new NullPointerException("Account does not exist");
         }
         System.out.println("Enter withdraw amount: $");
         double amount = scanner.nextDouble();
@@ -95,21 +100,22 @@ public class Bank {
         }
     }
 
+    // Method calls transfer method from Account class allowing the user to transfer
+    // money from one account to another if either account does not exist throw
+    // NullPointerException
     public void transfer() {
         System.out.println("Enter from account number");
         String fromNumber = scanner.nextLine();
         Account fromAccount = findAccountByNumber(fromNumber);
         if (fromAccount == null) {
-            System.out.println("From account not found!");
-            return;
+            throw new NullPointerException("Account does not exist");
         }
 
         System.out.println("Enter to accont number: ");
         String toNumber = scanner.nextLine();
         Account toAccount = findAccountByNumber(toNumber);
         if (toAccount == null) {
-            System.out.println("To Account not found");
-            return;
+            throw new NullPointerException("Account does not exist");
         }
 
         System.out.println("Enter transfer amount: $");
@@ -124,6 +130,8 @@ public class Bank {
 
     }
 
+    // Method used to display all accounts that are currently listed in the list of
+    // Accounts
     public void displayAll() {
         if (accounts.isEmpty()) {
             System.out.println("No accounts yet");
@@ -139,6 +147,9 @@ public class Bank {
         return scanner;
     }
 
+    // Method used to procces satements for each account at the end of the mounth
+    // checks if account is checking or saving and calls respective method for
+    // processing statements
     public void processEndOfMonth() {
         System.out.println("\n--- Running End-Of-Month Processing");
         for (int i = 0; i < accounts.size(); i++) {
@@ -155,6 +166,9 @@ public class Bank {
         System.out.println("Monthly processing complete. Balance updated");
     }
 
+    // Method allow an account to be removed based off the account number
+    // if account to be deleted does not exist throw NullPointerException
+    // else deletes account from list from memory and acount number from hashset
     public void deleteAccount() {
         System.out.println("--- Delete Account ---");
         System.out.println("Enter Account Number to close");
@@ -163,8 +177,7 @@ public class Bank {
         Account accountToRemove = findAccountByNumber(accountNumber);
 
         if (accountToRemove == null) {
-            System.out.println("Error: Account with number " + accountNumber + " not found");
-            return;
+            throw new NullPointerException("Account does not exist");
         }
 
         int indexToRemove = -1;
@@ -189,9 +202,9 @@ public class Bank {
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Internal Error: Could not remove account at index " + indexToRemove + ".");
         }
-
     }
 
+    // Method used to save all accounts created to a csv file for data keeping
     public void saveToFile(String filename) {
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(filename));
@@ -208,6 +221,7 @@ public class Bank {
         }
     }
 
+    // Method used to load all existing accounts for any kind of processing
     public void loadFromFile(String filename) {
         accounts.removeAll();
         nextAccountId = 1;
@@ -228,9 +242,9 @@ public class Bank {
                 Account loadedAccount;
 
                 if (type.equals("checking")) {
-                    loadedAccount = new Account(balance, holder, type, id);
+                    loadedAccount = new CheckingAccount(balance, holder, type, id);
                 } else if (type.equals("savings")) {
-                    loadedAccount = new Account(balance, holder, type, id);
+                    loadedAccount = new SavingsAccount(balance, holder, type, id);
                 } else {
                     continue;
                 }
